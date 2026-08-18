@@ -3,6 +3,12 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const authRoutes = require('./routes/authRoutes');
+const lectureRoutes = require('./routes/lectureRoutes'); 
+
+const conceptRoutes = require('./routes/conceptRoutes');
+const questionRoutes = require('./routes/questionRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +17,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/concepts', conceptRoutes);
+app.use('/api/questions', questionRoutes);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/lectures', lectureRoutes);
 
 // Correct paths pointing one directory up to /frontend
 const frontendPath = path.join(__dirname, '..', 'frontend');
