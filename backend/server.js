@@ -1,4 +1,5 @@
 // server.js
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -6,20 +7,33 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Core Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Correct paths pointing one directory up to /frontend
+const frontendPath = path.join(__dirname, '..', 'frontend');
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve Frontend Static Directories
+app.use(express.static(path.join(frontendPath, 'public')));
+app.use('/professor', express.static(path.join(frontendPath, 'professor')));
+app.use('/student', express.static(path.join(frontendPath, 'student')));
 
-// Root route (serves index.html by default)
+// HTML Routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(frontendPath, 'public', 'index.html'));
 });
 
-// Basic health check endpoint
+app.get('/professor', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'professor', 'professor.html'));
+});
+
+app.get('/student', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'student', 'student.html'));
+});
+
+// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', uptime: process.uptime() });
 });
@@ -31,5 +45,5 @@ app.use('/api', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
