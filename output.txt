@@ -1,0 +1,35 @@
+﻿diff --git a/frontend/public/index.html b/frontend/public/index.html
+index 6b59010..47c96b3 100644
+--- a/frontend/public/index.html
++++ b/frontend/public/index.html
+@@ -106,7 +106,7 @@
+ 
+         <div class="form-options" id="signup-options" style="display: none;">
+           <label class="remember-me">
+-            <input type="checkbox" id="terms-checkbox" required> I agree to the <a href="#" class="forgot-pass"
++            <input type="checkbox" id="terms-checkbox"> I agree to the <a href="#" class="forgot-pass"
+               style="margin-left: 4px;">Academic Code</a>
+           </label>
+         </div>
+@@ -287,6 +287,7 @@
+         if (currentMode === 'signup') {
+           const name = document.getElementById('reg-fullname').value.trim();
+           const confirmPassword = document.getElementById('reg-confirmpass').value;
++          const termsCheckbox = document.getElementById('terms-checkbox');
+ 
+           if (!name) {
+             alert('Please enter your full legal name.');
+@@ -302,6 +303,13 @@
+             return;
+           }
+ 
++          if (!termsCheckbox.checked) {
++            alert('You must agree to the Academic Code.');
++            submitBtn.disabled = false;
++            submitBtn.textContent = 'Complete Registration';
++            return;
++          }
++
+           // Registration API Call -> /api/auth/register
+           const response = await fetch(`${API_BASE_URL}/register`, {
+             method: 'POST',
