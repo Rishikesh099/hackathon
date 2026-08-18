@@ -2,41 +2,103 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>MastPath | Student Dashboard</title>
-	<link rel="stylesheet" href="/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MastPath | Student Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/student/styles.css">
 </head>
 
 <body>
-	<header>
-		<div class="nav-container">
-			<a href="/" class="brand">
-				<div class="brand-icon">🎓</div>
-				MastPath
-			</a>
-			<button type="button" id="logout-btn">Sign out</button>
-		</div>
-	</header>
 
-	<main class="hero-container">
-		<section class="hero-left">
-			<p class="eyebrow">Student workspace</p>
-			<h1 id="welcome-heading">Welcome to your dashboard</h1>
-			<p>Access your lectures, concepts, questions, and learning analytics from one place.</p>
-		</section>
+    <!-- Decorative background glows -->
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
 
-		<section class="auth-card" aria-label="Student dashboard">
-			<h2>Course workspace</h2>
-			<p id="student-email">Loading your account...</p>
-			<div class="dashboard-actions">
-				<a href="/student/student.html">Refresh dashboard</a>
-				<a href="/">Return to sign in</a>
-			</div>
-		</section>
-	</main>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <a href="/" class="brand">
+                <span class="brand-icon">🎓</span>
+                <span>MastPath</span>
+            </a>
+            <div class="nav-right">
+                <div class="user-greeting">
+                    <span class="pulse-indicator"></span>
+                    <span id="nav-email">Loading student...</span>
+                </div>
+                <button type="button" id="logout-btn" class="logout-btn">Sign out</button>
+            </div>
+        </div>
+    </header>
 
-	<script src="/student/app.js"></script>
+    <!-- Dashboard Container -->
+    <main class="dashboard-wrapper">
+        <!-- Welcome Header Card -->
+        <div class="welcome-card card">
+            <h1 id="welcome-heading">Welcome, Student</h1>
+            <p>Continuous progress checks, lectures review, and customized AI study recommendations.</p>
+        </div>
+
+        <!-- Main Grid Dashboard Content -->
+        <div class="dashboard-grid">
+
+            <!-- Left side: Lectures and Courses -->
+            <section class="dashboard-main-section">
+                <div class="section-header">
+                    <h2>📚 Enrolled Lectures</h2>
+                    <span class="count-badge" id="lecture-count">0</span>
+                </div>
+                <div class="lectures-grid" id="lectures-container">
+                    <!-- Loading state -->
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Loading your lecture workspaces...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right side: Mastery & Recommendations -->
+            <aside class="dashboard-sidebar">
+
+                <!-- Concept Mastery Card -->
+                <div class="analytics-card card">
+                    <h3>⚡ Concept Mastery</h3>
+                    <p class="subtitle font-sm">Your verified performance metrics across learning units.</p>
+                    <div class="mastery-list" id="mastery-container">
+                        <!-- Loading state -->
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Retriving mastery profiles...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Study recommendations Card -->
+                <div class="recommendations-card card">
+                    <h3>🤖 AI Recommendations</h3>
+                    <p class="subtitle font-sm">Personalized paths targeting your weak concept areas.</p>
+                    <ul class="recommendation-list" id="recommendations-container">
+                        <!-- Loading state -->
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Querying study recommendations...</p>
+                        </div>
+                    </ul>
+                </div>
+
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- Script logic -->
+    <script src="/student/app.js"></script>
 </body>
 
 </html>
