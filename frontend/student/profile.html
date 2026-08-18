@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Knowledge Profile | AI Learning Platform</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
+
+    <header>
+      <div class="nav-container">
+        <a href="dashboard.html" class="brand"
+          ><div class="brand-icon">🧠</div>
+          LearnTrace AI</a
+        >
+        <ul class="nav-links">
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li>
+            <a href="profile.html" style="color: #fff">Knowledge Profile</a>
+          </li>
+          <li><a href="index.html">Logout</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="main-wrapper">
+      <div class="section-title">
+        <h2>Your Concept Mastery Profile</h2>
+        <p>
+          Real-time concept performance based on your assessment answers and
+          reasoning quality.
+        </p>
+      </div>
+
+      <h3 style="margin-bottom: 1rem">Concept Breakdown</h3>
+      <div class="grid-3" id="mastery-container">Loading mastery...</div>
+
+      <h3 style="margin-top: 3rem; margin-bottom: 1rem">
+        AI Personal Recommendations
+      </h3>
+      <div id="recommendations-container">Loading recommendations...</div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/mockData.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        renderMastery();
+        renderRecommendations();
+      });
+
+      async function renderMastery() {
+        const container = document.getElementById("mastery-container");
+        let data = [];
+        try {
+          data = await apiFetch("/analytics/mastery", "GET");
+        } catch (err) {
+          data = mockMasteryData; // Use mock fallback[cite: 2]
+        }
+
+        container.innerHTML = "";
+        data.forEach((item) => {
+          let borderClass = "mastery-green";
+          let status = "Good";
+          // Thresholds: < 50% Needs attention, 50-70% Developing, > 70% Good[cite: 1, 2]
+          if (item.mastery_score < 50) {
+            borderClass = "mastery-red";
+            status = "Needs Attention";
+          } else if (item.mastery_score <= 70) {
+            borderClass = "mastery-yellow";
+            status = "Developing";
+          }
+
+          container.innerHTML += `
+                    <div class="card ${borderClass}">
+                        <h3>${item.name || "Concept ID: " + item.concept_id}</h3>
+                        <p style="font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">${item.mastery_score}% (${status})</p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem;">Attempts: ${item.attempt_count}</p>
+                    </div>
+                `;
+        });
+      }
+
+      async function renderRecommendations() {
+        const container = document.getElementById("recommendations-container");
+        let data = [];
+        try {
+          data = await apiFetch("/analytics/recommendations", "GET");
+        } catch (err) {
+          data = mockRecommendationsData; // Use mock fallback[cite: 2]
+        }
+
+        container.innerHTML = "";
+        data.forEach((rec) => {
+          container.innerHTML += `
+                    <div class="card" style="border-left: 4px solid var(--primary-student);">
+                        <p>${rec.recommendation_text}</p>
+                    </div>
+                `;
+        });
+      }
+    </script>
+  </body>
+</html>
