@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MastPath | Unified Academic Hub</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Common Stylesheet -->
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+
+  <div class="glow-sphere glow-1"></div>
+  <div class="glow-sphere glow-2"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">🎓</div>
+        MastPath
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Platform Features</a></li>
+        <li><a href="javascript:void(0)" onclick="openSupportModal()">IT Support</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero & Dual Auth Section -->
+  <main class="hero-container">
+    <div class="hero-left">
+      <h1>Unified Academic <span>Intelligence</span> Platform</h1>
+      <p>Streamline research, lecture schedules, real-time grading, and coursework management in one centralized workspace.</p>
+    </div>
+
+    <!-- Advanced Auth Card -->
+    <div class="auth-card">
+      
+      <!-- Role Switcher -->
+      <div class="role-switcher">
+        <button type="button" class="role-btn student-active active" id="btn-student" onclick="setRole('student')">
+          <span>🎒</span> Student
+        </button>
+        <button type="button" class="role-btn prof-active" id="btn-prof" onclick="setRole('professor')">
+          <span>🏛️</span> Professor
+        </button>
+      </div>
+
+      <!-- Mode Tabs (Sign In vs Sign Up) -->
+      <div class="mode-tabs">
+        <button type="button" class="mode-tab active" id="tab-signin" onclick="setMode('signin')">Sign In</button>
+        <button type="button" class="mode-tab" id="tab-signup" onclick="setMode('signup')">Create Account</button>
+      </div>
+
+      <div class="auth-header">
+        <h3 id="form-heading">Student Sign In</h3>
+        <p id="form-subheading">Enter your institutional credentials to access your courses.</p>
+      </div>
+
+      <!-- Dynamic Auth Form -->
+      <form id="auth-form" onsubmit="handleAuth(event)">
+        
+        <!-- Registration Full Name (Only on Sign Up) -->
+        <div class="signup-only" id="signup-fields" style="display: none;">
+          <div class="form-group">
+            <label for="reg-fullname">Full Name</label>
+            <input type="text" id="reg-fullname" placeholder="e.g. Eleanor Vance">
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label id="id-label" for="auth-email">Student Email</label>
+          <input type="email" id="auth-email" placeholder="e.g. s123456@univ.edu" required>
+        </div>
+        
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••••••" required>
+        </div>
+
+        <!-- Confirm Password (Only on Sign Up) -->
+        <div class="form-group signup-only" id="confirm-pass-group" style="display: none;">
+          <label for="reg-confirmpass">Confirm Password</label>
+          <input type="password" id="reg-confirmpass" placeholder="••••••••••••">
+        </div>
+
+        <!-- Form Options -->
+        <div class="form-options" id="signin-options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember-checkbox"> Keep signed in
+          </label>
+          <a href="javascript:void(0)" onclick="openSupportModal()" class="forgot-pass">Forgot Password?</a>
+        </div>
+
+        <div class="form-options" id="signup-options" style="display: none;">
+          <label class="remember-me">
+            <input type="checkbox" id="terms-checkbox" required> I agree to the <a href="#" class="forgot-pass" style="margin-left: 4px;">Academic Code</a>
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Access Dashboard</button>
+      </form>
+
+      <div class="auth-footer">
+        <p id="toggle-footnote">Don't have an account? <a href="javascript:void(0)" onclick="setMode('signup')">Register here</a></p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Features Section -->
+  <section class="main-wrapper" id="features">
+    <div class="section-title">
+      <h2>Architected for Modern Academia</h2>
+      <p>Purpose-built tools tailored distinctly for learners and educators.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Predictive Analytics</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Continuous grade tracking and syllabus progression insights generated instantly.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Direct Submissions</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Built-in IDE and markdown dropboxes supporting instant submission validation.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <h3>Role-Based Access</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Identity isolation ensuring confidential transcripts and departmental communications.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IT Support Modal -->
+  <div class="modal-overlay" id="supportModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeSupportModal()">&times;</button>
+      <div class="modal-header">
+        <div class="modal-badge">🛠️ Helpdesk & IT Services</div>
+        <h2>Academic IT Support</h2>
+        <p>Need access assistance, password recovery, or hardware support? Our team is available 24/7.</p>
+      </div>
+      <div class="support-channels">
+        <div class="support-channel-item">
+          <span class="channel-icon">📧</span>
+          <div>
+            <strong>Email Support</strong>
+            <p>support@mastpath.edu</p>
+          </div>
+        </div>
+        <div class="support-channel-item">
+          <span class="channel-icon">📞</span>
+          <div>
+            <strong>Emergency Line</strong>
+            <p>04828 20152</p>
+          </div>
+        </div>
+        <div class="support-channel-item">
+          <span class="channel-icon">📍</span>
+          <div>
+            <strong>Campus Tech Desk</strong>
+            <p>MastPath Technology Center, Kochi</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-brand-row">
+        <div class="brand">
+          <div class="brand-icon">🎓</div>
+          MastPath
+        </div>
+        <p>Next-generation academic intelligence, grade ledger, and curriculum platform engineered for modern universities.</p>
+        <div class="system-status">
+          <span class="status-dot"></span> All Systems Operational
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 MastPath Academic Systems Inc. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="javascript:void(0)" onclick="openSupportModal()">Get Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Database & Backend Connection Script -->
+  <script>
+    const API_BASE_URL = 'http://localhost:3000/api/auth';
+    let currentRole = 'student'; // Matches DB ENUM: 'student' | 'professor'
+    let currentMode = 'signin';  // 'signin' | 'signup'
+
+    function setRole(role) {
+      currentRole = role;
+      updateUI();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      updateUI();
+    }
+
+    function updateUI() {
+      const isStudent = currentRole === 'student';
+      const isSignIn = currentMode === 'signin';
+
+      // 1. Role switcher buttons
+      document.getElementById('btn-student').classList.toggle('active', isStudent);
+      document.getElementById('btn-prof').classList.toggle('active', !isStudent);
+
+      // 2. Mode tabs
+      document.getElementById('tab-signin').classList.toggle('active', isSignIn);
+      document.getElementById('tab-signup').classList.toggle('active', !isSignIn);
+
+      // 3. Headings
+      document.getElementById('form-heading').textContent = isSignIn 
+        ? (isStudent ? 'Student Portal Sign In' : 'Faculty & Staff Sign In')
+        : (isStudent ? 'Register Student Account' : 'Faculty Onboarding Portal');
+
+      document.getElementById('form-subheading').textContent = isSignIn
+        ? 'Enter your institutional credentials to access your portal.'
+        : 'Create your academic profile to connect to your department.';
+
+      // 4. Toggle fields
+      document.getElementById('signup-fields').style.display = isSignIn ? 'none' : 'block';
+      document.getElementById('confirm-pass-group').style.display = isSignIn ? 'none' : 'block';
+      document.getElementById('signin-options').style.display = isSignIn ? 'flex' : 'none';
+      document.getElementById('signup-options').style.display = isSignIn ? 'none' : 'flex';
+      
+      document.getElementById('toggle-footnote').innerHTML = isSignIn
+        ? `Don't have an account? <a href="javascript:void(0)" onclick="setMode('signup')">Register here</a>`
+        : `Already have an account? <a href="javascript:void(0)" onclick="setMode('signin')">Sign in here</a>`;
+
+      // 5. Input labels
+      document.getElementById('id-label').textContent = isStudent ? 'Student Email' : 'Faculty Email';
+      document.getElementById('auth-email').placeholder = isStudent ? 's123456@univ.edu' : 'prof.name@univ.edu';
+
+      // 6. Submit Button Style
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.textContent = isSignIn ? 'Access Dashboard' : 'Complete Registration';
+      if (isStudent) {
+        submitBtn.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        submitBtn.style.boxShadow = '0 4px 16px rgba(59, 130, 246, 0.35)';
+      } else {
+        submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        submitBtn.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.35)';
+      }
+    }
+
+    // Backend Form Submission Handler
+    async function handleAuth(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const submitBtn = document.getElementById('submit-btn');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
+
+      try {
+        if (currentMode === 'signup') {
+          const name = document.getElementById('reg-fullname').value.trim();
+          const confirmPassword = document.getElementById('reg-confirmpass').value;
+
+          if (!name) {
+            alert('Please enter your full legal name.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Complete Registration';
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            alert('Passwords do not match.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Complete Registration';
+            return;
+          }
+
+          // Registration API Call -> /api/auth/register
+          const response = await fetch(`${API_BASE_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: name,
+              email: email,
+              password: password,
+              role: currentRole // 'student' | 'professor'
+            })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Registration failed.');
+          }
+
+          alert('Registration successful! Please sign in with your credentials.');
+          setMode('signin');
+
+        } else {
+          // Login API Call -> /api/auth/login
+          const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: email,
+              password: password
+            })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Invalid email or password.');
+          }
+
+          // Store authentication token and user data in browser localStorage
+          localStorage.setItem('token', data.token);
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
+
+          alert(`Welcome back! Redirecting to ${currentRole} workspace...`);
+
+          // Redirect to appropriate role interface
+          if (currentRole === 'student') {
+            window.location.href = '../student/student.html';
+          } else {
+            window.location.href = '../professor/professor.html';
+          }
+        }
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        submitBtn.disabled = false;
+        updateUI();
+      }
+    }
+
+    function openSupportModal() {
+      document.getElementById('supportModal').classList.add('active');
+    }
+
+    function closeSupportModal() {
+      document.getElementById('supportModal').classList.remove('active');
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('supportModal');
+      if (event.target === modal) closeSupportModal();
+    }
+  </script>
+</body>
+</html>

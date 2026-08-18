@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard | AI Learning Platform</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
+
+    <header>
+      <div class="nav-container">
+        <a href="#" class="brand"
+          ><div class="brand-icon">🧠</div>
+          LearnTrace AI</a
+        >
+        <ul class="nav-links">
+          <li><a href="dashboard.html" style="color: #fff">Lectures</a></li>
+          <li><a href="profile.html">Knowledge Profile</a></li>
+          <li><a href="../public/index.htm">Logout</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="main-wrapper">
+      <div class="section-title">
+        <h2>Available Lectures & Assessments</h2>
+        <p>Select a lecture to diagnose your concept-level mastery.</p>
+      </div>
+
+      <div class="grid-3" id="lectures-container">
+        Loading available lectures...
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const container = document.getElementById("lectures-container");
+        try {
+          const lectures = await apiFetch("/lectures", "GET");
+          container.innerHTML = "";
+          lectures.forEach((lecture) => {
+            container.innerHTML += `
+                        <div class="card">
+                            <h3>${lecture.title}</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">${lecture.topic}</p>
+                            <button class="submit-btn" onclick="takeAssessment(${lecture.id})">Take Assessment</button>
+                        </div>
+                    `;
+          });
+        } catch (err) {
+          // Fallback mock rendering for offline development
+          container.innerHTML = `
+                    <div class="card">
+                        <h3>Lecture 1: Dijkstra's Algorithm</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Graph Shortest Paths & Priority Queues</p>
+                        <button class="submit-btn" onclick="takeAssessment(1)">Take Assessment</button>
+                    </div>
+                `;
+        }
+      });
+
+      function takeAssessment(lectureId) {
+        localStorage.setItem("current_lecture_id", lectureId);
+        window.location.href = "assessment.html";
+      }
+    </script>
+  </body>
+</html>
