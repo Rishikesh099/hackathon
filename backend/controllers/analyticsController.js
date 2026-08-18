@@ -1,24 +1,47 @@
-const db = require('../../database/db');
+const db = require('../database/db');
+const { analyzeReasoning, generateCollectiveReport } = require('../services/groqService');
+const { calculateMastery, getMasteryTier } = require('../services/knowledgeEngine');
 
-// 1. Submit a student's quiz attempt
+// 1. Submit Single Question Attempt with Live AI Cross-Check
 exports.submitAttempt = async (req, res) => {
   try {
-    const { 
-      question_id, 
-      selected_option_id, 
-      is_correct, 
-      reasoning, 
-      reasoning_score, 
-      concept_score 
-    } = req.body;
-    
-    const studentId = req.userId; // Safely grabbed from the JWT token middleware
+    const { question_id, selected_option_id, reasoning } = req.body;
+    const studentId = req.userId; // From JWT[cite: 1, 6]
 
-    if (!question_id || !selected_option_id || typeof is_correct === 'undefined') {
-      return res.status(400).json({ error: 'question_id, selected_option_id, and is_correct are required' });
+    if (!question_id || !selected_option_id) {
+      return res.status(400).json({ error: 'question_id and selected_option_id are required' });
     }
 
-    // Insert using the exact column names from your database
+    // A. Query question text, chosen option, correctness, and linked concept[cite: 15]
+    const [optRows] = await db.execute(
+      `SELECT qo.option_text, qo.is_correct, q.question_text, q.difficulty, qc.concept_id, c.name AS concept_name
+       FROM question_options qo
+       JOIN questions q ON qo.question_id = q.id
+       LEFT JOIN question_concepts qc ON q.id = qc.question_id
+       LEFT JOIN concepts c ON qc.concept_id = c.id
+       WHERE qo.id = ? AND q.id = ?`,
+      [selected_option_id, question_id]
+    );
+
+    if (optRows.length === 0) {
+      return res.status(404).json({ error: 'Question or option not found' });
+    }
+
+    const optData = optRows[0];
+    const isCorrect = Boolean(optData.is_correct);
+    const conceptId = optData.concept_id;
+    const conceptName = optData.concept_name || 'General Concept';
+
+    // B. AI Reasoning Cross-Check
+    const aiAnalysis = await analyzeReasoning(
+      optData.question_text,
+      optData.option_text,
+      reasoning || 'No reasoning provided',
+      conceptName,
+      isCorrect
+    );
+
+    // C. Insert Attempt into Database[cite: 1, 15]
     await db.execute(
       `INSERT INTO attempts 
       (student_id, question_id, selected_option_id, is_correct, reasoning, reasoning_score, concept_score) 
@@ -27,76 +50,144 @@ exports.submitAttempt = async (req, res) => {
         studentId, 
         question_id, 
         selected_option_id, 
-        is_correct, 
+        isCorrect, 
         reasoning || null, 
-        reasoning_score || 0, 
-        concept_score || 0
+        aiAnalysis.reasoning_score, 
+        aiAnalysis.concept_score
       ]
     );
 
-    res.status(201).json({ message: 'Attempt recorded successfully!' });
+    // D. Compute & Upsert Mastery into student_mastery[cite: 15]
+    let updatedMasteryScore = 50.0;
+    if (conceptId) {
+      const [masteryRows] = await db.execute(
+        `SELECT mastery_score, attempt_count FROM student_mastery WHERE student_id = ? AND concept_id = ?`,
+        [studentId, conceptId]
+      );
+
+      const oldMastery = masteryRows.length > 0 ? Number(masteryRows[0].mastery_score) : 50.0;
+      updatedMasteryScore = calculateMastery(oldMastery, isCorrect, aiAnalysis.reasoning_score);
+
+      await db.execute(
+        `INSERT INTO student_mastery (student_id, concept_id, mastery_score, attempt_count)
+         VALUES (?, ?, ?, 1)
+         ON DUPLICATE KEY UPDATE 
+           mastery_score = VALUES(mastery_score),
+           attempt_count = attempt_count + 1`,
+        [studentId, conceptId, updatedMasteryScore]
+      );
+    }
+
+    // Return instant feedback payload
+    res.status(201).json({
+      message: 'Attempt submitted and evaluated successfully!',
+      alignment_status: aiAnalysis.alignment_status,
+      feedback: aiAnalysis.feedback,
+      reasoning_score: aiAnalysis.reasoning_score,
+      concept_score: aiAnalysis.concept_score,
+      updated_mastery: updatedMasteryScore,
+      tier: getMasteryTier(updatedMasteryScore)
+    });
+
   } catch (error) {
-    console.error('Error submitting attempt:', error.message);
+    console.error('Error submitting attempt:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-// 2. Get a student's mastery dashboard
+// 2. Finalize Assessment & Save Collective Diagnostic Report[cite: 15]
+exports.finalizeAssessment = async (req, res) => {
+  try {
+    const { lecture_id } = req.body;
+    const studentId = req.userId; // From JWT[cite: 1, 6]
+
+    if (!lecture_id) {
+      return res.status(400).json({ error: 'lecture_id is required' });
+    }
+
+    // A. Fetch Lecture Topic & All Student Attempts for this Lecture[cite: 15]
+    const [lecRows] = await db.execute('SELECT topic FROM lectures WHERE id = ?', [lecture_id]);
+    if (lecRows.length === 0) return res.status(404).json({ error: 'Lecture not found' });
+    const topic = lecRows[0].topic;
+
+    const [attempts] = await db.execute(`
+      SELECT a.is_correct, a.reasoning, a.reasoning_score, a.concept_score,
+             q.question_text, qo.option_text AS selected_option, c.id AS concept_id, c.name AS concept_name
+      FROM attempts a
+      JOIN questions q ON a.question_id = q.id
+      JOIN question_options qo ON a.selected_option_id = qo.id
+      LEFT JOIN question_concepts qc ON q.id = qc.question_id
+      LEFT JOIN concepts c ON qc.concept_id = c.id
+      WHERE a.student_id = ? AND q.lecture_id = ?
+    `, [studentId, lecture_id]);
+
+    if (attempts.length === 0) {
+      return res.status(400).json({ error: 'No attempts found for this lecture' });
+    }
+
+    // Find weakest concept ID
+    const weakestConceptId = attempts[0].concept_id || 1;
+
+    // B. AI Generates Collective Diagnostic Action Plan
+    const collectiveReport = await generateCollectiveReport(topic, weakestConceptId, attempts);
+
+    // C. Save Recommendation in MySQL[cite: 1, 15]
+    await db.execute(
+      'INSERT INTO recommendations (student_id, concept_id, recommendation_text) VALUES (?, ?, ?)',
+      [studentId, collectiveReport.concept_id, collectiveReport.recommendation_text]
+    );
+
+    res.status(201).json({
+      message: 'Collective assessment report generated and saved!',
+      report: collectiveReport
+    });
+
+  } catch (error) {
+    console.error('Error finalizing assessment:', error);
+    res.status(500).json({ error: 'Failed to generate assessment report' });
+  }
+};
+
+// 3. Get Student Mastery[cite: 1]
 exports.getStudentMastery = async (req, res) => {
   try {
-    const studentId = req.userId;
+    const studentId = req.userId; //[cite: 1, 6]
 
-    // Matches 'student_id' column
     const [mastery] = await db.execute(`
-      SELECT m.*, c.name AS concept_name 
+      SELECT m.*, c.name AS concept_name, c.description AS concept_description
       FROM student_mastery m 
       JOIN concepts c ON m.concept_id = c.id 
       WHERE m.student_id = ?
     `, [studentId]);
 
-    res.status(200).json(mastery);
+    const formattedMastery = mastery.map(m => ({
+      ...m,
+      tier: getMasteryTier(m.mastery_score)
+    }));
+
+    res.status(200).json(formattedMastery);
   } catch (error) {
     console.error('Error fetching mastery:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-// 3. Get recommendations for a student
+// 4. Get Recommendations[cite: 1]
 exports.getRecommendations = async (req, res) => {
   try {
-    const studentId = req.userId;
+    const studentId = req.userId; //[cite: 1, 6]
 
-    // Matches 'student_id' column
     const [recommendations] = await db.execute(`
       SELECT r.*, c.name AS concept_name 
       FROM recommendations r 
       JOIN concepts c ON r.concept_id = c.id 
       WHERE r.student_id = ?
+      ORDER BY r.created_at DESC
     `, [studentId]);
 
     res.status(200).json(recommendations);
   } catch (error) {
     console.error('Error fetching recommendations:', error.message);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-// Save a recommendation for a student (Can be called by your backend/LLM service)
-exports.createRecommendation = async (req, res) => {
-  try {
-    const { student_id, concept_id, recommendation_text } = req.body;
-
-    if (!student_id || !concept_id || !recommendation_text) {
-      return res.status(400).json({ error: 'student_id, concept_id, and recommendation_text are required' });
-    }
-
-    await db.execute(
-      'INSERT INTO recommendations (student_id, concept_id, recommendation_text) VALUES (?, ?, ?)',
-      [student_id, concept_id, recommendation_text]
-    );
-
-    res.status(201).json({ message: 'Recommendation saved successfully!' });
-  } catch (error) {
-    console.error('Error saving recommendation:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

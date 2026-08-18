@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const db = require('../../database/db');
+const db = require('../database/db');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {

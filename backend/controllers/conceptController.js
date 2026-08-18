@@ -1,6 +1,6 @@
-const db = require('../../database/db');
+const db = require('../database/db');
 
-// Create a new learning concept
+// 1. Create a manual concept[cite: 3]
 exports.createConcept = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -24,7 +24,7 @@ exports.createConcept = async (req, res) => {
   }
 };
 
-// Link a concept to a lecture
+// 2. Link concept to lecture[cite: 3]
 exports.linkConceptToLecture = async (req, res) => {
   try {
     const { lecture_id, concept_id, is_prerequisite } = req.body;
@@ -41,6 +41,36 @@ exports.linkConceptToLecture = async (req, res) => {
     res.status(201).json({ message: 'Concept successfully linked to lecture!' });
   } catch (error) {
     console.error('Error linking concept:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// 3. Get all concepts associated with a specific lecture
+exports.getConceptsByLecture = async (req, res) => {
+  try {
+    const { lectureId } = req.params;
+
+    const [concepts] = await db.execute(`
+      SELECT c.id, c.name, c.description, lc.is_prerequisite
+      FROM concepts c
+      JOIN lecture_concepts lc ON c.id = lc.concept_id
+      WHERE lc.lecture_id = ?
+    `, [lectureId]);
+
+    res.status(200).json(concepts);
+  } catch (error) {
+    console.error('Error fetching lecture concepts:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// 4. Get all concepts in the system
+exports.getAllConcepts = async (req, res) => {
+  try {
+    const [concepts] = await db.execute('SELECT * FROM concepts ORDER BY name ASC');
+    res.status(200).json(concepts);
+  } catch (error) {
+    console.error('Error fetching concepts:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
