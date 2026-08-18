@@ -43,7 +43,7 @@ app.get('/professor', (req, res) => {
 });
 
 app.get('/student', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'student', 'dashboard.html'));
+  res.sendFile(path.join(frontendPath, 'student', 'student.html'));
 });
 
 // Health check endpoint

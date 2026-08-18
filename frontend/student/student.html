@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MastPath | Student Dashboard</title>
+	<link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+	<header>
+		<div class="nav-container">
+			<a href="/" class="brand">
+				<div class="brand-icon">🎓</div>
+				MastPath
+			</a>
+			<button type="button" id="logout-btn">Sign out</button>
+		</div>
+	</header>
+
+	<main class="hero-container">
+		<section class="hero-left">
+			<p class="eyebrow">Student workspace</p>
+			<h1 id="welcome-heading">Welcome to your dashboard</h1>
+			<p>Access your lectures, concepts, questions, and learning analytics from one place.</p>
+		</section>
+
+		<section class="auth-card" aria-label="Student dashboard">
+			<h2>Course workspace</h2>
+			<p id="student-email">Loading your account...</p>
+			<div class="dashboard-actions">
+				<a href="/student/student.html">Refresh dashboard</a>
+				<a href="/">Return to sign in</a>
+			</div>
+		</section>
+	</main>
+
+	<script src="/student/app.js"></script>
+</body>
+
+</html>
