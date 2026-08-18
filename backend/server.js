@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
-const lectureRoutes = require('./routes/lectureRoutes'); 
+const lectureRoutes = require('./routes/lectureRoutes');
 
 const conceptRoutes = require('./routes/conceptRoutes');
 const questionRoutes = require('./routes/questionRoutes');
@@ -43,7 +43,7 @@ app.get('/professor', (req, res) => {
 });
 
 app.get('/student', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'student', 'student.html'));
+  res.sendFile(path.join(frontendPath, 'student', 'dashboard.html'));
 });
 
 // Health check endpoint

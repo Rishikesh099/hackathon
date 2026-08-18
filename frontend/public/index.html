@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,13 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- Common Stylesheet -->
   <link rel="stylesheet" href="../../styles.css">
 </head>
+
 <body>
 
   <div class="glow-sphere glow-1"></div>
@@ -36,12 +39,13 @@
   <main class="hero-container">
     <div class="hero-left">
       <h1>Unified Academic <span>Intelligence</span> Platform</h1>
-      <p>Streamline research, lecture schedules, real-time grading, and coursework management in one centralized workspace.</p>
+      <p>Streamline research, lecture schedules, real-time grading, and coursework management in one centralized
+        workspace.</p>
     </div>
 
     <!-- Advanced Auth Card -->
     <div class="auth-card">
-      
+
       <!-- Role Switcher -->
       <div class="role-switcher">
         <button type="button" class="role-btn student-active active" id="btn-student" onclick="setRole('student')">
@@ -65,7 +69,7 @@
 
       <!-- Dynamic Auth Form -->
       <form id="auth-form" onsubmit="handleAuth(event)">
-        
+
         <!-- Registration Full Name (Only on Sign Up) -->
         <div class="signup-only" id="signup-fields" style="display: none;">
           <div class="form-group">
@@ -79,7 +83,7 @@
           <label id="id-label" for="auth-email">Student Email</label>
           <input type="email" id="auth-email" placeholder="e.g. s123456@univ.edu" required>
         </div>
-        
+
         <!-- Password Field -->
         <div class="form-group">
           <label for="auth-password">Password</label>
@@ -102,7 +106,8 @@
 
         <div class="form-options" id="signup-options" style="display: none;">
           <label class="remember-me">
-            <input type="checkbox" id="terms-checkbox" required> I agree to the <a href="#" class="forgot-pass" style="margin-left: 4px;">Academic Code</a>
+            <input type="checkbox" id="terms-checkbox" required> I agree to the <a href="#" class="forgot-pass"
+              style="margin-left: 4px;">Academic Code</a>
           </label>
         </div>
 
@@ -110,7 +115,8 @@
       </form>
 
       <div class="auth-footer">
-        <p id="toggle-footnote">Don't have an account? <a href="javascript:void(0)" onclick="setMode('signup')">Register here</a></p>
+        <p id="toggle-footnote">Don't have an account? <a href="javascript:void(0)" onclick="setMode('signup')">Register
+            here</a></p>
       </div>
 
     </div>
@@ -127,17 +133,20 @@
       <div class="card">
         <div class="card-icon">📊</div>
         <h3>Predictive Analytics</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Continuous grade tracking and syllabus progression insights generated instantly.</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Continuous grade tracking and syllabus progression
+          insights generated instantly.</p>
       </div>
       <div class="card">
         <div class="card-icon">⚡</div>
         <h3>Direct Submissions</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Built-in IDE and markdown dropboxes supporting instant submission validation.</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Built-in IDE and markdown dropboxes supporting instant
+          submission validation.</p>
       </div>
       <div class="card">
         <div class="card-icon">🔒</div>
         <h3>Role-Based Access</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Identity isolation ensuring confidential transcripts and departmental communications.</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Identity isolation ensuring confidential transcripts and
+          departmental communications.</p>
       </div>
     </div>
   </section>
@@ -185,7 +194,8 @@
           <div class="brand-icon">🎓</div>
           MastPath
         </div>
-        <p>Next-generation academic intelligence, grade ledger, and curriculum platform engineered for modern universities.</p>
+        <p>Next-generation academic intelligence, grade ledger, and curriculum platform engineered for modern
+          universities.</p>
         <div class="system-status">
           <span class="status-dot"></span> All Systems Operational
         </div>
@@ -201,7 +211,7 @@
 
   <!-- Database & Backend Connection Script -->
   <script>
-    const API_BASE_URL = 'http://localhost:3000/api/auth';
+    const API_BASE_URL = '/api/auth';
     let currentRole = 'student'; // Matches DB ENUM: 'student' | 'professor'
     let currentMode = 'signin';  // 'signin' | 'signup'
 
@@ -228,7 +238,7 @@
       document.getElementById('tab-signup').classList.toggle('active', !isSignIn);
 
       // 3. Headings
-      document.getElementById('form-heading').textContent = isSignIn 
+      document.getElementById('form-heading').textContent = isSignIn
         ? (isStudent ? 'Student Portal Sign In' : 'Faculty & Staff Sign In')
         : (isStudent ? 'Register Student Account' : 'Faculty Onboarding Portal');
 
@@ -241,7 +251,7 @@
       document.getElementById('confirm-pass-group').style.display = isSignIn ? 'none' : 'block';
       document.getElementById('signin-options').style.display = isSignIn ? 'flex' : 'none';
       document.getElementById('signup-options').style.display = isSignIn ? 'none' : 'flex';
-      
+
       document.getElementById('toggle-footnote').innerHTML = isSignIn
         ? `Don't have an account? <a href="javascript:void(0)" onclick="setMode('signup')">Register here</a>`
         : `Already have an account? <a href="javascript:void(0)" onclick="setMode('signin')">Sign in here</a>`;
@@ -307,7 +317,7 @@
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.message || 'Registration failed.');
+            throw new Error(data.error || data.message || 'Registration failed.');
           }
 
           alert('Registration successful! Please sign in with your credentials.');
@@ -327,22 +337,25 @@
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.message || 'Invalid email or password.');
+            throw new Error(data.error || data.message || 'Invalid email or password.');
           }
 
           // Store authentication token and user data in browser localStorage
           localStorage.setItem('token', data.token);
+          localStorage.setItem('jwt_token', data.token);
           if (data.user) {
             localStorage.setItem('user', JSON.stringify(data.user));
+          } else {
+            localStorage.setItem('user', JSON.stringify({ email: email, role: currentRole }));
           }
 
           alert(`Welcome back! Redirecting to ${currentRole} workspace...`);
 
           // Redirect to appropriate role interface
           if (currentRole === 'student') {
-            window.location.href = '../student/student.html';
+            window.location.href = 'student/dashboard.html';
           } else {
-            window.location.href = '../professor/professor.html';
+            window.location.href = 'professor/professor.html';
           }
         }
       } catch (err) {
@@ -361,10 +374,11 @@
       document.getElementById('supportModal').classList.remove('active');
     }
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
       const modal = document.getElementById('supportModal');
       if (event.target === modal) closeSupportModal();
     }
   </script>
 </body>
+
 </html>
