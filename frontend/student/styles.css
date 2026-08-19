@@ -31,6 +31,17 @@ body {
     line-height: 1.5;
 }
 
+/* General footer */
+footer {
+    border-top: 1px solid var(--border-color);
+    padding: 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    backdrop-filter: blur(8px);
+    background-color: rgba(7, 10, 19, 0.6);
+}
+
 /* Glow Spheres Background */
 .glow-sphere {
     position: absolute;
@@ -89,6 +100,16 @@ header {
 
 .brand-icon {
     font-size: 1.5rem;
+}
+
+.badge-student {
+    margin-left: 8px;
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .nav-right {

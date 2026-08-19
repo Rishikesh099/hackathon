@@ -24,7 +24,9 @@ let activeLectureId = null;
 // 2. DOM Elements Bindings
 document.addEventListener("DOMContentLoaded", () => {
   // Setup user details greeting
-  document.getElementById("nav-email").textContent = studentUser.email;
+  document.getElementById("nav-email").textContent = (
+    studentUser.name || studentUser.email?.split("@")[0] || "Student"
+  ).toUpperCase();
   document.getElementById("welcome-heading").textContent =
     `Welcome back, ${studentUser.name || "Student"}`;
 

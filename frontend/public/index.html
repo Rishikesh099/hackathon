@@ -217,6 +217,20 @@
             position: relative;
         }
 
+        .auth-heading {
+            margin-bottom: 22px;
+        }
+
+        .auth-heading h2 {
+            font-size: 1.55rem;
+            margin-bottom: 6px;
+        }
+
+        .auth-heading p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 900px) {
             .auth-card {
                 justify-self: center;
@@ -278,6 +292,12 @@
             flex-direction: column;
             gap: 6px;
             text-align: left;
+        }
+
+        .field-hint {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            line-height: 1.4;
         }
 
         label {
@@ -372,47 +392,6 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
         }
 
-        /* Status & Alert boxes */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            display: none;
-            text-align: left;
-            border: 1px solid transparent;
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-error {
-            background-color: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .alert-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.2);
-            color: #34d399;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         /* Solid buttons */
         .submit-btn {
             background: linear-gradient(135deg, var(--blue-primary), var(--purple-accent));
@@ -439,6 +418,12 @@
 
         .submit-btn:active {
             transform: translateY(1px);
+        }
+
+        .submit-btn:disabled {
+            cursor: wait;
+            opacity: 0.75;
+            transform: none;
         }
 
         /* Spinner for active request state */
@@ -483,7 +468,6 @@
                 <span class="brand-icon">🎓</span>
                 <span>MastPath</span>
             </a>
-            <span class="nav-right-btn" id="header-cta" onclick="toggleMode('register')">Get Started</span>
         </div>
     </header>
 
@@ -513,6 +497,11 @@
 
         <!-- Right Side: Interaction Auth Form Card -->
         <div class="auth-card">
+            <div class="auth-heading">
+                <h2 id="auth-title">Welcome</h2>
+                <p id="auth-subtitle">Sign in to continue your learning journey.</p>
+            </div>
+
             <!-- Tabs selection -->
             <div class="tabs">
                 <button type="button" class="tab-btn active" id="tab-login" onclick="toggleMode('login')">Sign
@@ -521,48 +510,17 @@
                     onclick="toggleMode('register')">Register</button>
             </div>
 
-            <!-- Alerts alerts for system response feedback -->
-            <div class="alert alert-error" id="auth-error">
-                <span>⚠️</span>
-                <span class="message" id="error-message">Error performing task</span>
-            </div>
-
-            <div class="alert alert-success" id="auth-success">
-                <span>✓</span>
-                <span class="message" id="success-message">Operation successful!</span>
-            </div>
-
             <!-- Authentication Form -->
             <form id="auth-form" onsubmit="handleFormSubmit(event)" novalidate>
-                <!-- Full name panel (visible only in registration mode) -->
+                <!-- Registration-only profile details -->
                 <div class="form-group" id="name-group" style="display: none;">
                     <label for="reg-name">Full Name</label>
-                    <input type="text" id="reg-name" placeholder="John Doe" autocomplete="name">
+                    <input type="text" id="reg-name" placeholder="Your full name" autocomplete="name">
                 </div>
 
-                <!-- Email Input -->
-                <div class="form-group">
-                    <label for="auth-email">Email Address</label>
-                    <input type="email" id="auth-email" placeholder="student@mastpath.edu" required
-                        autocomplete="email">
-                </div>
-
-                <!-- Password Input -->
-                <div class="form-group">
-                    <label for="auth-password">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="auth-password" placeholder="••••••••" required
-                            autocomplete="current-password">
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility()"
-                            aria-label="Toggle Password Visibility">
-                            👁️
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Role PICKER (visible in register mode by default, lets segment student/professor) -->
+                <!-- Account role is selected during registration -->
                 <div class="form-group" id="role-group" style="display: none;">
-                    <label>Your Role</label>
+                    <label for="role-student">Account Type</label>
                     <div class="role-segment">
                         <div class="role-option">
                             <input type="radio" id="role-student" name="role" value="student" checked>
@@ -573,6 +531,27 @@
                             <label for="role-professor" class="role-label">Professor</label>
                         </div>
                     </div>
+                </div>
+
+                <!-- Email Input -->
+                <div class="form-group">
+                    <label for="auth-email">Email Address</label>
+                    <input type="email" id="auth-email" placeholder="you@example.com" required
+                        autocomplete="email">
+                </div>
+
+                <!-- Password Input -->
+                <div class="form-group">
+                    <label for="auth-password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="auth-password" placeholder="Enter your password" required
+                            autocomplete="current-password">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility()"
+                            aria-label="Toggle password visibility">
+                            👁️
+                        </button>
+                    </div>
+                    <span class="field-hint" id="password-hint" style="display: none;">Use at least 8 characters.</span>
                 </div>
 
                 <!-- Action Button -->
@@ -623,10 +602,9 @@
             const nameGroup = document.getElementById('name-group');
             const roleGroup = document.getElementById('role-group');
             const btnText = document.getElementById('btn-text');
-            const headerCta = document.getElementById('header-cta');
-
-            // Dismiss error/success states on switch
-            hideAlerts();
+            const authTitle = document.getElementById('auth-title');
+            const authSubtitle = document.getElementById('auth-subtitle');
+            const passwordHint = document.getElementById('password-hint');
 
             if (mode === 'login') {
                 tabLogin.classList.add('active');
@@ -634,14 +612,18 @@
                 nameGroup.style.display = 'none';
                 roleGroup.style.display = 'none';
                 btnText.textContent = 'Sign In';
-                headerCta.textContent = 'Get Started';
+                authTitle.textContent = 'Welcome back';
+                authSubtitle.textContent = 'Sign in to continue your learning journey.';
+                passwordHint.style.display = 'none';
             } else {
                 tabLogin.classList.remove('active');
                 tabRegister.classList.add('active');
                 nameGroup.style.display = 'flex';
                 roleGroup.style.display = 'flex';
                 btnText.textContent = 'Create Account';
-                headerCta.textContent = 'Sign In';
+                authTitle.textContent = 'Create your account';
+                authSubtitle.textContent = 'Set up your profile to start learning with MastPath.';
+                passwordHint.style.display = 'block';
             }
         }
 
@@ -653,30 +635,6 @@
             } else {
                 passwordInput.type = 'password';
             }
-        }
-
-        // Helper warnings display
-        function hideAlerts() {
-            document.getElementById('auth-error').style.display = 'none';
-            document.getElementById('auth-success').style.display = 'none';
-        }
-
-        function showError(message) {
-            const errAlert = document.getElementById('auth-error');
-            const errMsg = document.getElementById('error-message');
-            document.getElementById('auth-success').style.display = 'none';
-
-            errMsg.textContent = message;
-            errAlert.style.display = 'flex';
-        }
-
-        function showSuccess(message) {
-            const successAlert = document.getElementById('auth-success');
-            const successMsg = document.getElementById('success-message');
-            document.getElementById('auth-error').style.display = 'none';
-
-            successMsg.textContent = message;
-            successAlert.style.display = 'flex';
         }
 
         // Toggle loading indicator
@@ -699,7 +657,6 @@
         // Form Submit Dispatch helper
         async function handleFormSubmit(e) {
             e.preventDefault();
-            hideAlerts();
 
             const emailInput = document.getElementById('auth-email');
             const passwordInput = document.getElementById('auth-password');
@@ -711,7 +668,10 @@
 
             // Client side checks
             if (!email || !password) {
-                showError("Please fill in email and password fields.");
+                return;
+            }
+
+            if (currentMode === 'register' && password.length < 8) {
                 return;
             }
 
@@ -746,9 +706,6 @@
                     };
                     localStorage.setItem('user', JSON.stringify(userPayload));
 
-                    // Route user to their profile dashboard
-                    showSuccess("Login Successful! Redirecting...");
-
                     setTimeout(() => {
                         if (data.role === 'professor') {
                             window.location.replace('/professor');
@@ -765,7 +722,6 @@
 
                     if (!name) {
                         setLoading(false);
-                        showError("Please fill out your full name.");
                         return;
                     }
 
@@ -784,7 +740,6 @@
                     }
 
                     // Successful Registration -> switch and let them login
-                    showSuccess("Registration Successful! Please sign in with your password.");
                     setTimeout(() => {
                         toggleMode('login');
                         // Pre-populate register's email for ease of use
@@ -794,7 +749,6 @@
                 }
             } catch (error) {
                 console.error("Authentication action failed:", error.message);
-                showError(error.message);
             } finally {
                 setLoading(false);
             }

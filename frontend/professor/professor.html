@@ -388,7 +388,8 @@
       alert('Access restricted: Please log in with a Professor account.');
       window.location.replace('/');
     } else {
-      document.getElementById('prof-welcome').textContent = `Prof. ${user.name || 'Faculty'}`;
+      const professorName = user.name || user.email?.split('@')[0] || 'Faculty';
+      document.getElementById('prof-welcome').textContent = `Prof. ${professorName.toUpperCase()}`;
       loadClassAnalytics();
       loadLectures();
     }
@@ -651,5 +652,10 @@
         .replace(/'/g, '&#39;');
     }
   </script>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 MastPath AI Learning. All rights reserved.</p>
+  </footer>
 </body>
 </html>
