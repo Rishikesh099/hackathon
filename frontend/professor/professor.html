@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="/student/styles.css">
   <style>
     .dashboard-topbar {
       display: flex;
@@ -21,7 +21,7 @@
     .tab-bar {
       display: flex;
       gap: 0.75rem;
-      border-bottom: 1px solid var(--border-glass);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       margin-bottom: 2rem;
       overflow-x: auto;
       padding-bottom: 4px;
@@ -30,23 +30,23 @@
     .tab-btn {
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: #94a3b8;
       padding: 0.75rem 1.25rem;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       border-bottom: 2px solid transparent;
-      transition: var(--transition);
+      transition: all 0.3s;
       white-space: nowrap;
     }
 
     .tab-btn:hover {
-      color: var(--text-main);
+      color: #f8fafc;
     }
 
     .tab-btn.active {
       color: #fff;
-      border-bottom: 2px solid var(--primary-prof);
+      border-bottom: 2px solid #10b981;
     }
 
     .tab-content {
@@ -67,7 +67,7 @@
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      transition: var(--transition);
+      transition: all 0.3s;
     }
 
     .action-btn-sm:hover {
@@ -121,7 +121,7 @@
 
     .question-preview-card {
       background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glass);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       padding: 1.25rem;
       margin-bottom: 1rem;
@@ -137,7 +137,7 @@
     .option-item {
       padding: 0.5rem 0.75rem;
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
       font-size: 0.85rem;
     }
@@ -146,6 +146,40 @@
       border-color: rgba(16, 185, 129, 0.4);
       background: rgba(16, 185, 129, 0.1);
       color: #6ee7b7;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .data-table th {
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .data-table td {
+      padding: 12px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .badge-prof {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
     @keyframes fadeIn {
@@ -163,81 +197,84 @@
   <!-- Header Navigation -->
   <header>
     <div class="nav-container">
-      <a href="../public/index.html" class="brand">
-        <div class="brand-icon" style="background: linear-gradient(135deg, #10b981, #059669);">🏛️</div>
-        MastPath <span class="badge badge-prof" style="margin-left: 8px;">Professor Console</span>
+      <a href="/" class="brand">
+        <div class="brand-icon">🏛️</div>
+        MastPath <span class="badge-prof" style="margin-left: 8px;">Professor Console</span>
       </a>
-      <ul class="nav-links">
-        <li><a href="javascript:void(0)" class="active" onclick="switchTab('tab-analytics')">Class Analytics</a></li>
-        <li><a href="javascript:void(0)" onclick="switchTab('tab-lectures')">Course Topics</a></li>
-        <li><a href="javascript:void(0)" onclick="switchTab('tab-create')">Create Lecture</a></li>
-        <li><a href="javascript:void(0)" onclick="handleLogout()" style="color: #f87171; font-weight: 600;">Sign Out</a></li>
-      </ul>
+      <div class="nav-right">
+        <div class="user-greeting">
+          <span class="pulse-indicator"></span>
+          <span id="prof-welcome">Loading faculty...</span>
+        </div>
+        <button type="button" onclick="handleLogout()" class="logout-btn">
+          Sign Out
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- Main Faculty Dashboard Body -->
-  <main class="main-wrapper">
+  <main class="dashboard-wrapper">
     
     <!-- Top Welcome Banner -->
     <div class="dashboard-topbar">
       <div>
-        <h2 id="prof-welcome">Welcome, Professor</h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Continuous concept-level intelligence and AI pedagogical diagnostics.</p>
+        <h2 style="font-weight: 800; font-size: 1.8rem;">Faculty Management Console</h2>
+        <p style="color: #94a3b8; font-size: 0.95rem;">Continuous concept-level intelligence and AI pedagogical diagnostics.</p>
       </div>
-      <button class="submit-btn" style="width: auto; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 16px var(--primary-prof-glow);" onclick="switchTab('tab-create')">
+      <button class="logout-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; font-weight: 600;" onclick="switchTab('tab-create')">
         + New Lecture & AI Diagnosis
       </button>
     </div>
 
-    <!-- Navigation Tabs (Aligned to Hackathon Roles) -->
+    <!-- Navigation Tabs -->
     <div class="tab-bar">
-      <button class="tab-btn active" id="btn-tab-analytics" onclick="switchTab('tab-analytics')">📊 Class Concept Analytics & AI Insights</button>
+      <button class="tab-btn active" id="btn-tab-analytics" onclick="switchTab('tab-analytics')">📊 Class Concept Analytics</button>
       <button class="tab-btn" id="btn-tab-lectures" onclick="switchTab('tab-lectures')">📚 Recorded Lectures</button>
       <button class="tab-btn" id="btn-tab-create" onclick="switchTab('tab-create')">⚡ Create Topic & Generate MCQs</button>
-      <button class="tab-btn" id="btn-tab-preview" onclick="switchTab('tab-preview')">👁️ Diagnostic Assessment Preview</button>
+      <button class="tab-btn" id="btn-tab-preview" onclick="switchTab('tab-preview')">👁️ Assessment Preview</button>
     </div>
 
-    <!-- TAB 1: CLASS-LEVEL CONCEPT ANALYTICS & TEACHING INSIGHT -->
+    <!-- TAB 1: CLASS-LEVEL CONCEPT ANALYTICS -->
     <section id="tab-analytics" class="tab-content active">
       
-      <!-- AI Teaching Insight Panel (Core Hackathon Requirement) -->
+      <!-- AI Teaching Insight Panel -->
       <div class="ai-insight-box">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-          <div class="ai-pill">✨ Groq AI Teaching Insight</div>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">Real-time synthesis</span>
+          <div class="ai-pill">✨ AI Curriculum Insights</div>
+          <span style="font-size: 0.8rem; color: #94a3b8;">Real-time synthesis</span>
         </div>
-        <h3 id="insight-title" style="margin-bottom: 0.5rem; color: #f8fafc;">Prerequisite Gap Detected in "Dijkstra's Algorithm"</h3>
-        <p id="insight-text" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
-          Analysis of recent student reasoning logs shows that <strong>42% of the class</strong> has a misconception regarding <strong>Priority Queue extraction</strong> rather than the shortest-path relaxation step. Recommend a 15-minute review on Min-Heap invariants before introducing A* search.
+        <h3 id="insight-title" style="margin-bottom: 0.5rem; color: #f8fafc;">Diagnostic Analysis Active</h3>
+        <p id="insight-text" style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+          Student attempts and reasoning quality are continuously monitored. Review concept mastery scores below to pinpoint prerequisite knowledge gaps.
         </p>
       </div>
 
       <!-- Cohort Summary Metrics -->
       <div class="grid-3" style="margin-bottom: 2rem;">
         <div class="card">
-          <p style="color: var(--text-muted); font-size: 0.85rem;">Class Concept Mastery</p>
-          <h2 style="font-size: 2rem; margin: 0.4rem 0;" id="avg-mastery-score">68.2%</h2>
-          <span class="badge badge-student">Weighted by Reasoning Quality</span>
+          <p style="color: #94a3b8; font-size: 0.85rem;">Average Concept Mastery</p>
+          <h2 style="font-size: 2rem; margin: 0.4rem 0;" id="avg-mastery-score">--</h2>
+          <span class="badge-prof">Weighted by Reasoning</span>
         </div>
         <div class="card">
-          <p style="color: var(--text-muted); font-size: 0.85rem;">Critical Knowledge Gaps</p>
-          <h2 style="font-size: 2rem; margin: 0.4rem 0; color: #f87171;" id="weak-concepts-count">2 Concepts</h2>
-          <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);">Priority Queue, Heap Invariants</span>
+          <p style="color: #94a3b8; font-size: 0.85rem;">Identified Knowledge Gaps</p>
+          <h2 style="font-size: 2rem; margin: 0.4rem 0; color: #f87171;" id="weak-concepts-count">--</h2>
+          <span style="font-size: 0.75rem; color: #fca5a5;">Score &lt; 50%</span>
         </div>
         <div class="card">
-          <p style="color: var(--text-muted); font-size: 0.85rem;">Diagnostic Submissions</p>
-          <h2 style="font-size: 2rem; margin: 0.4rem 0;" id="total-attempts">48 Attempts</h2>
-          <span class="badge badge-prof">8 Diagnostic MCQs Active</span>
+          <p style="color: #94a3b8; font-size: 0.85rem;">Total Recorded Topics</p>
+          <h2 style="font-size: 2rem; margin: 0.4rem 0;" id="total-lectures-count">--</h2>
+          <span class="badge-prof">Live Assessment Pipelines</span>
         </div>
       </div>
 
-      <!-- Class-level Concept Breakdown Table -->
+      <!-- Concept Breakdown Table -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <div>
-            <h3>Aggregated Class Concept Mastery</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Estimations updated via student attempts, reasoning correctness, and difficulty weighting.</p>
+            <h3>Active Concept Mastery Tracking</h3>
+            <p style="color: #94a3b8; font-size: 0.85rem;">Estimations updated via student attempts, reasoning correctness, and EMA difficulty weighting.</p>
           </div>
           <button class="action-btn-sm" onclick="loadClassAnalytics()">🔄 Refresh Analytics</button>
         </div>
@@ -247,15 +284,14 @@
             <thead>
               <tr>
                 <th>Concept Name</th>
-                <th>Prerequisite Of</th>
-                <th>Class Mastery Score</th>
+                <th>Mastery Score</th>
                 <th>Status</th>
-                <th>Actionable Suggestion</th>
+                <th>Diagnostic Description</th>
               </tr>
             </thead>
             <tbody id="class-analytics-body">
               <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading class mastery intelligence...</td>
+                <td colspan="4" style="text-align: center; color: #94a3b8; padding: 2rem;">Loading mastery intelligence...</td>
               </tr>
             </tbody>
           </table>
@@ -269,7 +305,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <div>
             <h3>Course Topics & Lectures</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">All recorded topics with AI-generated concept taxonomy.</p>
+            <p style="color: #94a3b8; font-size: 0.85rem;">All recorded topics with AI-generated concept taxonomy.</p>
           </div>
           <button class="action-btn-sm" onclick="loadLectures()">🔄 Refresh</button>
         </div>
@@ -279,15 +315,15 @@
             <thead>
               <tr>
                 <th>Lecture ID</th>
-                <th>Topic / Title</th>
-                <th>Taught Summary</th>
+                <th>Lecture Title</th>
+                <th>Topic Overview</th>
                 <th>Created At</th>
                 <th>Diagnostic Action</th>
               </tr>
             </thead>
             <tbody id="lectures-table-body">
               <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading lectures...</td>
+                <td colspan="5" style="text-align: center; color: #94a3b8; padding: 2rem;">Loading lectures...</td>
               </tr>
             </tbody>
           </table>
@@ -298,25 +334,24 @@
     <!-- TAB 3: CREATE TOPIC & TRIGGER AI GENERATION -->
     <section id="tab-create" class="tab-content">
       <div class="card" style="max-width: 680px; margin: 0 auto;">
-        <div class="card-icon" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); color: #34d399;">⚡</div>
         <h3>Record Lecture Topic</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">
-          Enter what you taught. Groq AI will instantly extract core concepts, detect prerequisites, and generate 8 diagnostic MCQs.
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.5rem;">
+          Enter what you taught. Groq AI will extract core concepts, detect prerequisites, and generate diagnostic MCQs with misconception distractors.
         </p>
 
         <form id="create-lecture-form" onsubmit="handleCreateLecture(event)">
-          <div class="form-group">
-            <label for="lec-title">Lecture Title / Main Topic</label>
-            <input type="text" id="lec-title" placeholder="e.g. Dijkstra's Algorithm" required>
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.4rem;" for="lec-title">Lecture Title</label>
+            <input type="text" id="lec-title" placeholder="e.g. Dynamic Programming & Memoization" required style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #fff;">
           </div>
 
-          <div class="form-group">
-            <label for="lec-topic">Topic Overview / What was covered in class</label>
-            <textarea id="lec-topic" rows="4" placeholder="e.g. Shortest path in weighted graphs, priority queue relaxation, greedy vertex selection..." required></textarea>
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.4rem;" for="lec-topic">Topic Overview / What was covered</label>
+            <textarea id="lec-topic" rows="4" placeholder="e.g. 0/1 Knapsack problem, optimal substructure, overlapping subproblems, and space optimization..." required style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #fff;"></textarea>
           </div>
 
-          <button type="submit" class="submit-btn" id="generate-btn" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 16px var(--primary-prof-glow);">
-            🚀 Record Topic & Generate 8 Diagnostic MCQs
+          <button type="submit" class="logout-btn" id="generate-btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; font-weight: 600; padding: 0.85rem;">
+            🚀 Record Topic & Generate AI Diagnostic Assessment
           </button>
         </form>
       </div>
@@ -327,56 +362,33 @@
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <div>
-            <div class="ai-pill" style="margin-bottom: 0.5rem;">✨ 8 Diagnostic Questions Generated</div>
-            <h3 id="preview-lecture-title">Assessment Preview: Dijkstra's Algorithm</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Each question prompts students for their answer choice plus a mandatory reasoning explanation.</p>
+            <div class="ai-pill" style="margin-bottom: 0.5rem;">✨ Diagnostic Questions Preview</div>
+            <h3 id="preview-lecture-title">Assessment Preview</h3>
+            <p style="color: #94a3b8; font-size: 0.85rem;">Each question prompts students for their answer choice plus mandatory written reasoning.</p>
           </div>
-          <span class="badge badge-prof">Active in Student Portal</span>
+          <span class="badge-prof">Active in Student Portal</span>
         </div>
 
-        <!-- Dynamic Questions Container -->
         <div id="questions-preview-container">
-          <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No assessment loaded. Record a topic to preview its 8 generated MCQs.</p>
+          <p style="color: #94a3b8; text-align: center; padding: 2rem;">No assessment selected. Record a topic or click "View Questions" on a recorded lecture.</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Global Footer -->
-  <footer class="app-footer">
-    <div class="footer-container">
-      <div class="footer-brand-row">
-        <div class="brand">
-          <div class="brand-icon" style="background: linear-gradient(135deg, #10b981, #059669);">🎓</div>
-          MastPath
-        </div>
-        <p>AI-Powered Continuous Learning Intelligence Platform — Faculty Management Console</p>
-        <div class="system-status">
-          <span class="status-dot"></span> Authenticated Session
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 MastPath Academic Systems Inc. All rights reserved.</p>
-      <div class="footer-bottom-links">
-        <a href="javascript:void(0)" onclick="handleLogout()">Sign Out</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- API Integration & Groq AI Connector Script -->
+  <!-- Script logic -->
   <script>
-    const API_BASE = 'http://localhost:3000/api';
-    const token = localStorage.getItem('token');
+    const API_BASE = '/api';
+    const token = localStorage.getItem('token') || localStorage.getItem('jwt_token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     // 1. Role Guard & Auth Check
     if (!token || user.role !== 'professor') {
       alert('Access restricted: Please log in with a Professor account.');
-      window.location.href = '../public/index.html';
+      window.location.replace('/');
     } else {
-      document.getElementById('prof-welcome').textContent = `Welcome, Prof. ${user.name || 'Faculty'}`;
+      document.getElementById('prof-welcome').textContent = `Prof. ${user.name || 'Faculty'}`;
       loadClassAnalytics();
       loadLectures();
     }
@@ -395,7 +407,7 @@
     // 3. GET /api/lectures -> Load Professor's Lectures
     async function loadLectures() {
       const tbody = document.getElementById('lectures-table-body');
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading lectures...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 1.5rem;">Loading lectures...</td></tr>`;
 
       try {
         const res = await fetch(`${API_BASE}/lectures`, {
@@ -405,28 +417,44 @@
         if (!res.ok) throw new Error('Failed to retrieve lectures.');
         const lectures = await res.json();
 
+        const countEl = document.getElementById('total-lectures-count');
+        if (countEl) countEl.textContent = `${lectures.length} Topics`;
+
         if (!Array.isArray(lectures) || lectures.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No lectures recorded yet. Click "Create Lecture" to start.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 2rem;">No lectures recorded yet. Click "Create Lecture" to start.</td></tr>`;
           return;
         }
 
-        tbody.innerHTML = lectures.map(l => `
-          <tr>
-            <td><span class="badge badge-prof">#${l.id}</span></td>
-            <td><strong>${escapeHtml(l.title)}</strong></td>
-            <td style="color: var(--text-muted); font-size: 0.9rem;">${escapeHtml(l.topic || '-')}</td>
-            <td style="font-size: 0.85rem; color: var(--text-muted);">${l.created_at ? new Date(l.created_at).toLocaleDateString() : 'Active'}</td>
-            <td>
-              <button class="action-btn-sm" onclick="loadAssessmentPreview(${l.id}, '${escapeHtml(l.title)}')">View 8 MCQs</button>
-            </td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = lectures.map(l => {
+          const safeTitle = escapeHtml(l.title);
+          const safeTopic = escapeHtml(l.topic || '-');
+          const dateStr = l.created_at ? new Date(l.created_at).toLocaleDateString() : 'Active';
+
+          return `
+            <tr>
+              <td><span class="badge-prof">#${l.id}</span></td>
+              <td><strong>${safeTitle}</strong></td>
+              <td style="color: #94a3b8; font-size: 0.9rem;">${safeTopic}</td>
+              <td style="font-size: 0.85rem; color: #94a3b8;">${dateStr}</td>
+              <td>
+                <button class="action-btn-sm" data-id="${l.id}" data-title="${safeTitle}" onclick="handleViewQuestionsClick(this)">View Questions</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #f87171; padding: 1.5rem;">${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #f87171; padding: 1.5rem;">${escapeHtml(err.message)}</td></tr>`;
       }
     }
 
-    // 4. POST /api/lectures -> Record Topic & Trigger Groq AI Concept & MCQ Generation
+    // Helper button click handler to avoid quote escaping issues in inline onclicks
+    function handleViewQuestionsClick(button) {
+      const lectureId = button.getAttribute('data-id');
+      const lectureTitle = button.getAttribute('data-title');
+      loadAssessmentPreview(lectureId, lectureTitle);
+    }
+
+    // 4. POST /api/lectures -> Record Topic & Trigger Groq AI Generation
     async function handleCreateLecture(event) {
       event.preventDefault();
 
@@ -435,10 +463,9 @@
       const btn = document.getElementById('generate-btn');
 
       btn.disabled = true;
-      btn.textContent = '⏳ Groq AI Extracting Concepts & Generating 8 MCQs...';
+      btn.textContent = '⏳ Groq AI Extracting Concepts & Generating MCQs...';
 
       try {
-        // Step A: Create Lecture Entry
         const res = await fetch(`${API_BASE}/lectures`, {
           method: 'POST',
           headers: {
@@ -449,41 +476,29 @@
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to record lecture.');
+        if (!res.ok) throw new Error(data.error || data.message || 'Failed to record lecture.');
 
-        const lectureId = data.lectureId || data.id || 1;
+        const lectureId = data.lectureId || data.id;
 
-        // Step B: Call AI generation if backend exposes /api/ai/generate-assessment
-        try {
-          await fetch(`${API_BASE}/ai/generate-assessment`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ lecture_id: lectureId, topic: `${title}: ${topic}` })
-          });
-        } catch (aiErr) {
-          console.log('AI generation endpoint trigger logged:', aiErr);
-        }
-
-        alert(`Lecture "${title}" recorded! 8 Diagnostic MCQs generated for student assessments.`);
+        alert(`Lecture "${title}" recorded! ${data.questions_generated || 'Diagnostic'} questions generated.`);
         event.target.reset();
-        loadLectures();
+        await loadLectures();
+        await loadClassAnalytics();
         loadAssessmentPreview(lectureId, title);
       } catch (err) {
         alert(err.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = '🚀 Record Topic & Generate 8 Diagnostic MCQs';
+        btn.textContent = '🚀 Record Topic & Generate AI Diagnostic Assessment';
       }
     }
 
-    // 5. GET /api/questions/lecture/:lectureId -> Load 8 Diagnostic MCQs Preview
+    // 5. GET /api/questions/lecture/:lectureId -> Preview Generated Questions & Correct Options
     async function loadAssessmentPreview(lectureId, lectureTitle) {
       document.getElementById('preview-lecture-title').textContent = `Assessment Preview: ${lectureTitle || 'Lecture #' + lectureId}`;
       const container = document.getElementById('questions-preview-container');
-      container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Loading generated diagnostic MCQs...</p>`;
+      container.innerHTML = `<p style="color: #94a3b8; text-align: center; padding: 2rem;">Loading generated diagnostic MCQs from database...</p>`;
+      
       switchTab('tab-preview');
 
       try {
@@ -491,44 +506,70 @@
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        let questions = [];
-        if (res.ok) {
-          questions = await res.json();
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to load questions.');
         }
+        
+        const questions = await res.json();
 
-        // Fallback demo questions for end-to-end presentation if DB is fresh
         if (!Array.isArray(questions) || questions.length === 0) {
-          questions = getDemoQuestions();
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+              <p>No questions found for this lecture.</p>
+              <button class="action-btn-sm" style="margin-top: 1rem;" onclick="loadAssessmentPreview(${lectureId}, '${escapeHtml(lectureTitle)}')">🔄 Retry Loading</button>
+            </div>`;
+          return;
         }
 
-        container.innerHTML = questions.map((q, idx) => `
-          <div class="question-preview-card">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-              <span style="font-weight: 700; color: #60a5fa;">Question ${idx + 1} of 8</span>
-              <span class="badge" style="background: rgba(255,255,255,0.06); text-transform: uppercase;">${q.difficulty || 'Medium'}</span>
-            </div>
-            <p style="font-size: 0.95rem; margin-bottom: 0.75rem;">${escapeHtml(q.question_text || q.question)}</p>
-            
-            <div class="option-grid">
-              ${(q.options || []).map((opt, oIdx) => `
-                <div class="option-item ${opt.is_correct || oIdx === q.correctIndex ? 'correct' : ''}">
-                  <strong>${String.fromCharCode(65 + oIdx)}.</strong> ${escapeHtml(opt.option_text || opt)}
-                  ${opt.is_correct || oIdx === q.correctIndex ? ' ✓ (Correct)' : ''}
-                </div>
-              `).join('')}
-            </div>
+        container.innerHTML = questions.map((q, idx) => {
+          const qText = q.question_text || q.question || 'Question Text Missing';
+          const difficulty = q.difficulty || 'medium';
+          const conceptName = q.concept_name ? ` • Concept: ${escapeHtml(q.concept_name)}` : '';
+          const optionsList = Array.isArray(q.options) ? q.options : [];
 
-            <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px;">
-              💬 <em>Student Prompt: "Why did you choose this answer?" (Analyzed by Groq for reasoning quality & misconceptions)</em>
+          const optionsHtml = optionsList.map((opt, oIdx) => {
+            const isOptCorrect = typeof opt === 'object' ? (opt.is_correct === 1 || opt.is_correct === true) : (oIdx === q.correctIndex);
+            const optText = typeof opt === 'object' ? (opt.option_text || opt.text || JSON.stringify(opt)) : opt;
+            
+            return `
+              <div class="option-item ${isOptCorrect ? 'correct' : ''}">
+                <strong>${String.fromCharCode(65 + oIdx)}.</strong> ${escapeHtml(optText)}
+                ${isOptCorrect ? ' <span style="font-weight: 700;">✓ (Correct Answer)</span>' : ''}
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="question-preview-card">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-weight: 700; color: #60a5fa;">Question ${idx + 1} of ${questions.length}${conceptName}</span>
+                <span class="badge-prof" style="text-transform: uppercase;">${escapeHtml(difficulty)}</span>
+              </div>
+              <p style="font-size: 1rem; color: #f8fafc; margin-bottom: 0.75rem; font-weight: 500;">${escapeHtml(qText)}</p>
+              
+              <div class="option-grid">
+                ${optionsHtml}
+              </div>
+
+              <div style="margin-top: 0.75rem; font-size: 0.8rem; color: #94a3b8; background: rgba(0,0,0,0.25); padding: 0.6rem 0.75rem; border-radius: 8px; border-left: 3px solid #8b5cf6;">
+                🧠 <strong>Diagnostic Assessment Prompt:</strong> <em>Student submits selected option along with a mandatory conceptual justification.</em>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
+
       } catch (err) {
-        container.innerHTML = `<p style="color: #f87171; text-align: center; padding: 2rem;">${err.message}</p>`;
+        console.error('Error loading assessment preview:', err);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem;">
+            <p style="color: #f87171; margin-bottom: 1rem;">${escapeHtml(err.message)}</p>
+            <button class="action-btn-sm" onclick="loadAssessmentPreview(${lectureId}, '${escapeHtml(lectureTitle)}')">🔄 Try Again</button>
+          </div>`;
       }
     }
 
-    // 6. GET /api/analytics/mastery -> Class Concept Analytics & Gaps
+    // 6. GET /api/analytics/mastery -> Class Concept Analytics
     async function loadClassAnalytics() {
       const tbody = document.getElementById('class-analytics-body');
 
@@ -537,28 +578,31 @@
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        let data = [];
-        if (res.ok) {
-          data = await res.json();
+        if (!res.ok) throw new Error('Failed to load mastery analytics.');
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 2rem;">No student attempts recorded yet. Diagnostics will populate as students complete quizzes.</td></tr>`;
+          document.getElementById('avg-mastery-score').textContent = 'N/A';
+          document.getElementById('weak-concepts-count').textContent = '0 Concepts';
+          return;
         }
 
-        // Demo fallback data matching Dijkstra hackathon demo scenario
-        if (!Array.isArray(data) || data.length === 0) {
-          data = getDemoClassMastery();
-        }
+        let totalScore = 0;
+        let weakCount = 0;
 
         tbody.innerHTML = data.map(item => {
-          const score = item.mastery_score || 0;
-          let badge = 'badge-prof';
-          let status = 'Good';
+          const score = parseFloat(item.mastery_score) || 0;
+          totalScore += score;
+          if (score < 50) weakCount++;
+
+          let status = item.tier || 'Developing';
           let fillClass = '';
 
           if (score < 50) {
-            badge = 'badge';
             status = 'Knowledge Gap';
             fillClass = 'danger';
           } else if (score < 70) {
-            badge = 'badge-student';
             status = 'Developing';
             fillClass = 'warning';
           }
@@ -566,59 +610,45 @@
           return `
             <tr>
               <td><strong>${escapeHtml(item.concept_name || 'Concept #' + item.concept_id)}</strong></td>
-              <td><span style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(item.prerequisite_for || "Dijkstra's Algorithm")}</span></td>
               <td style="min-width: 140px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
-                  <span>${score}%</span>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 2px;">
+                  <span>${score.toFixed(1)}%</span>
                 </div>
                 <div class="progress-bar-container">
                   <div class="progress-bar-fill ${fillClass}" style="width: ${Math.min(score, 100)}%;"></div>
                 </div>
               </td>
-              <td><span class="${badge}">${status}</span></td>
-              <td style="font-size: 0.85rem; color: var(--text-muted);">${escapeHtml(item.recommendation || 'Proceed to advanced applications.')}</td>
+              <td><span class="badge-prof">${status}</span></td>
+              <td style="font-size: 0.85rem; color: #94a3b8;">${escapeHtml(item.concept_description || 'Target concept')}</td>
             </tr>
           `;
         }).join('');
+
+        document.getElementById('avg-mastery-score').textContent = `${(totalScore / data.length).toFixed(1)}%`;
+        document.getElementById('weak-concepts-count').textContent = `${weakCount} Concept${weakCount === 1 ? '' : 's'}`;
+
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #f87171; padding: 1.5rem;">${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f87171; padding: 1.5rem;">${escapeHtml(err.message)}</td></tr>`;
       }
-    }
-
-    // Demo Data for Immediate Hackathon Presentation
-    function getDemoClassMastery() {
-      return [
-        { concept_name: 'Graph Fundamentals', prerequisite_for: "Dijkstra's Algorithm", mastery_score: 84, recommendation: 'Solid class understanding; ready for advanced traversal.' },
-        { concept_name: 'Priority Queue / Min-Heap', prerequisite_for: "Dijkstra's Algorithm", mastery_score: 44, recommendation: 'Revise heap extraction invariants before A* search.' },
-        { concept_name: 'Edge Relaxation', prerequisite_for: "Dijkstra's Algorithm", mastery_score: 72, recommendation: 'Reinforce distance update conditions.' },
-        { concept_name: 'Negative Weight Cycles', prerequisite_for: 'Bellman-Ford', mastery_score: 48, recommendation: 'Clarify why greedy selection fails with negative edges.' }
-      ];
-    }
-
-    function getDemoQuestions() {
-      return [
-        {
-          question: "Which data structure is used in Dijkstra's algorithm to efficiently select the next minimum-distance vertex?",
-          difficulty: "medium",
-          options: [{ option_text: "Stack", is_correct: false }, { option_text: "Queue", is_correct: false }, { option_text: "Priority Queue (Min-Heap)", is_correct: true }, { option_text: "Linked List", is_correct: false }]
-        },
-        {
-          question: "What is the time complexity of Dijkstra's algorithm implemented with a binary min-heap?",
-          difficulty: "hard",
-          options: [{ option_text: "O(V^2)", is_correct: false }, { option_text: "O((V + E) log V)", is_correct: true }, { option_text: "O(V log E)", is_correct: false }, { option_text: "O(E^2)", is_correct: false }]
-        }
-      ];
     }
 
     // Sign Out
     function handleLogout() {
       localStorage.removeItem('token');
+      localStorage.removeItem('jwt_token');
       localStorage.removeItem('user');
-      window.location.href = '/';
+      window.location.replace('/');
     }
 
+    // Full HTML entity sanitizer including single and double quotes
     function escapeHtml(str) {
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
   </script>
 </body>

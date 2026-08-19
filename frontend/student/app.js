@@ -18,6 +18,9 @@ if (userString) {
   }
 }
 
+// Track currently active lecture for assessment finalization
+let activeLectureId = null;
+
 // 2. DOM Elements Bindings
 document.addEventListener("DOMContentLoaded", () => {
   // Setup user details greeting
@@ -147,6 +150,7 @@ async function loadLectures() {
 
 // 5. In-Page Assessment Controller Logic
 async function openQuizView(lectureId, lectureTitle) {
+  activeLectureId = lectureId; // Store active lecture ID
   document.getElementById("dashboard-view").style.display = "none";
   document.getElementById("quiz-view").style.display = "block";
   document.getElementById("quiz-title").textContent = lectureTitle;
@@ -223,7 +227,7 @@ async function handleQuizSubmit(e) {
   e.preventDefault();
   const submitBtn = document.getElementById("submit-quiz-btn");
   submitBtn.disabled = true;
-  submitBtn.textContent = "Submitting...";
+  submitBtn.textContent = "AI Evaluating Answers...";
 
   const formData = new FormData(e.target);
   const questionIds = new Set();
@@ -234,6 +238,7 @@ async function handleQuizSubmit(e) {
     }
   }
 
+  // 1. Submit each attempt (Cross-check reasoning + compute concept EMA mastery)
   for (let qId of questionIds) {
     const payload = {
       question_id: parseInt(qId),
@@ -243,9 +248,13 @@ async function handleQuizSubmit(e) {
     await apiFetch("/analytics/attempts", "POST", payload);
   }
 
-  alert(
-    "Assessment submitted successfully! Your mastery levels and recommendations have been updated.",
-  );
+  // 2. Synthesize AI Diagnostic Recommendations
+  if (activeLectureId) {
+    submitBtn.textContent = "Generating Recommendations...";
+    await apiFetch("/analytics/finalize", "POST", { lecture_id: activeLectureId });
+  }
+
+  alert("Assessment submitted! AI has updated your mastery and recommendations.");
   submitBtn.disabled = false;
   submitBtn.textContent = "Submit Assessment";
 
@@ -273,14 +282,15 @@ async function loadMastery() {
   }
 
   masteryList.forEach((item) => {
-    const masteryVal = parseFloat(item.mastery_level) || 0;
+    // FIX: Read mastery_score from DB/API
+    const masteryVal = parseFloat(item.mastery_score) || 0;
     const progressPercent = Math.min(Math.max(masteryVal, 0), 100);
 
     // Determine performance level classification color gradient
     let levelClass = "level-low";
-    if (progressPercent >= 75) {
+    if (progressPercent >= 70) {
       levelClass = "level-high";
-    } else if (progressPercent >= 40) {
+    } else if (progressPercent >= 50) {
       levelClass = "level-med";
     }
 
@@ -288,7 +298,7 @@ async function loadMastery() {
     itemEl.className = "mastery-item";
     itemEl.innerHTML = `
       <div class="mastery-info">
-        <span class="mastery-name" title="${escapeHTML(item.concept_name)}">${escapeHTML(item.concept_name)}</span>
+        <span class="mastery-name" title="${escapeHTML(item.concept_name || 'Concept')}">${escapeHTML(item.concept_name || 'Concept')}</span>
         <span class="mastery-val">${progressPercent.toFixed(1)}%</span>
       </div>
       <div class="progress-track">
@@ -306,7 +316,7 @@ async function loadMastery() {
   });
 }
 
-// 8. Render AI Study Recommendations
+// 8. Render ONLY the Latest AI Study Recommendation
 async function loadRecommendations() {
   const container = document.getElementById("recommendations-container");
   const recommendations = await apiFetch("/analytics/recommendations");
@@ -317,24 +327,91 @@ async function loadRecommendations() {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">💡</div>
-        <p class="font-sm">You are fully up to date! Solidify concepts by completing course quizzes.</p>
+        <p class="font-sm">You are fully up to date! Complete assessments to generate personalized action plans.</p>
       </div>
     `;
     return;
   }
 
-  recommendations.forEach((rec) => {
-    const li = document.createElement("li");
-    li.className = "recommendation-item";
-    li.innerHTML = `
-      <div class="rec-icon">🎯</div>
-      <div class="rec-content">
-        <span class="rec-concept">${escapeHTML(rec.concept_name)}</span>
-        <span class="rec-text">${escapeHTML(rec.recommendation_text)}</span>
-      </div>
-    `;
-    container.appendChild(li);
-  });
+  // Pick only the single most recent recommendation
+  const latestRec = recommendations[0];
+  const parsed = parseRecommendationText(latestRec.recommendation_text);
+
+  // Build action items list HTML
+  const actionPlanHtml = parsed.actionSteps.length > 0 
+    ? `
+      <div class="rec-action-plan">
+        <span class="action-plan-title">📌 Action Plan:</span>
+        <ol class="action-plan-list">
+          ${parsed.actionSteps.map(step => `<li>${escapeHTML(step)}</li>`).join("")}
+        </ol>
+      </div>`
+    : "";
+
+  // Build metric tags HTML if available
+  const metricsHtml = (parsed.accuracy || parsed.reasoning)
+    ? `
+      <div class="rec-badges">
+        ${parsed.accuracy ? `<span class="rec-badge badge-acc">🎯 Accuracy: ${escapeHTML(parsed.accuracy)}</span>` : ""}
+        ${parsed.reasoning ? `<span class="rec-badge badge-res">🧠 Reasoning: ${escapeHTML(parsed.reasoning)}</span>` : ""}
+      </div>`
+    : "";
+
+  const li = document.createElement("li");
+  li.className = "recommendation-item";
+  li.innerHTML = `
+    <div class="rec-header">
+      <span class="rec-concept">${escapeHTML(latestRec.concept_name || "Latest Diagnostic Report")}</span>
+      <span class="rec-date">${new Date(latestRec.created_at || Date.now()).toLocaleDateString([], { month: "short", day: "numeric" })}</span>
+    </div>
+
+    ${metricsHtml}
+
+    <div class="rec-summary">
+      ${escapeHTML(parsed.summary)}
+    </div>
+
+    ${actionPlanHtml}
+  `;
+
+  container.appendChild(li);
+}
+
+// Helper: Safely parses structured sections from the LLM recommendation text
+function parseRecommendationText(rawText) {
+  if (!rawText) return { summary: "No specific feedback generated.", actionSteps: [], accuracy: null, reasoning: null };
+
+  let text = rawText;
+  let accuracy = null;
+  let reasoning = null;
+
+  // 1. Extract bracketed metrics if present (e.g. [Accuracy: 80% | Reasoning: 90%])
+  const metricsMatch = text.match(/\[Accuracy:\s*([^|\]]+)\|\s*Reasoning:\s*([^\]]+)\]/i);
+  if (metricsMatch) {
+    accuracy = metricsMatch[1].trim();
+    reasoning = metricsMatch[2].trim();
+    text = text.replace(metricsMatch[0], "").trim();
+  }
+
+  // 2. Separate Summary from Action Plan
+  let summary = text;
+  let actionSteps = [];
+
+  const actionSplit = text.split(/Action Plan:\s*/i);
+  if (actionSplit.length > 1) {
+    summary = actionSplit[0].replace(/^Summary:\s*/i, "").trim();
+    const rawActionText = actionSplit[1];
+
+    // Split numbered items like "1. Step one 2. Step two" or newlines
+    actionSteps = rawActionText
+      .split(/\d+\.\s+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+  } else {
+    summary = text.replace(/^Summary:\s*/i, "").trim();
+  }
+
+  return { summary, actionSteps, accuracy, reasoning };
 }
 
 // Helper utility to escape HTML inputs

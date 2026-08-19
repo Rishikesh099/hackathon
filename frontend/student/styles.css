@@ -488,3 +488,117 @@ header {
         transform: rotate(360deg);
     }
 }
+
+/* Enhanced Recommendation Cards */
+.recommendation-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.recommendation-item {
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform var(--transition-speed), border-color var(--transition-speed);
+}
+
+.recommendation-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rec-concept {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rec-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Metric Badges */
+.rec-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rec-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+}
+
+.badge-acc {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.badge-res {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+/* Diagnostic Summary Text */
+.rec-summary {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--blue-primary);
+}
+
+/* Structured Action Plan */
+.rec-action-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+
+.action-plan-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #c4b5fd;
+  text-transform: uppercase;
+}
+
+.action-plan-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.action-plan-list li {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}

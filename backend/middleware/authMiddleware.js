@@ -5,28 +5,34 @@ exports.verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   
   if (!authHeader) {
-    return res.status(403).json({ error: 'No token provided. Access denied.' });
+    return res.status(401).json({ error: 'No token provided. Access denied.' });
   }
 
-  // Tokens are usually sent as "Bearer [token]", so we split it to just get the token string
-  const token = authHeader.split(' ')[1];
+  // Tokens are usually sent as "Bearer <token>"
+  const token = authHeader.startsWith('Bearer ') 
+    ? authHeader.split(' ')[1] 
+    : authHeader;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Malformed token header. Access denied.' });
+  }
 
   // 2. Verify the token using your secret key
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'supersecretjwtkey', (err, decoded) => {
     if (err) {
-      return res.status(401).json({ error: 'Failed to authenticate token. It may be expired.' });
+      return res.status(403).json({ error: 'Failed to authenticate token. It may be expired or invalid.' });
     }
 
-    // 3. If valid, save the user's ID and role to the request so the next functions can use it
-    req.userId = decoded.userId;
+    // 3. Save both user ID variations and user role
+    req.userId = decoded.userId || decoded.id;
     req.userRole = decoded.role;
     
-    // Move on to the actual API route
+    // Move on to the next handler
     next();
   });
 };
 
-// Optional: Extra security checkpoint specifically for Professors
+// Security checkpoint specifically for Professors
 exports.isProfessor = (req, res, next) => {
   if (req.userRole !== 'professor') {
     return res.status(403).json({ error: 'Access denied. Only professors can perform this action.' });

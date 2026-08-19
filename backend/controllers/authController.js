@@ -63,10 +63,10 @@ exports.login = async (req, res) => {
 
     // 4. Generate the "VIP wristband" (JWT Token)
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '2h' } // The token will expire after 2 hours
-    );
+  { userId: user.id, role: user.role },
+  process.env.JWT_SECRET || 'supersecretjwtkey',
+  { expiresIn: '24h' }
+);
 
     // 5. Send the success response and the token back to the frontend
     res.status(200).json({ 

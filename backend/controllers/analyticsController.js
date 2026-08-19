@@ -148,22 +148,76 @@ exports.finalizeAssessment = async (req, res) => {
   }
 };
 
-// 3. Get Student Mastery[cite: 1]
+// 3. Get Student Mastery (Returns class concept analytics for professors)
 exports.getStudentMastery = async (req, res) => {
   try {
-    const studentId = req.userId; //[cite: 1, 6]
+    const userId = req.userId;
+    const userRole = req.userRole;
 
+    // Check if the caller is a professor or check role from database if not in token
+    let isProfessor = (userRole === 'professor');
+    
+    if (!userRole) {
+      const [userRows] = await db.execute('SELECT role FROM users WHERE id = ?', [userId]);
+      if (userRows.length > 0 && userRows[0].role === 'professor') {
+        isProfessor = true;
+      }
+    }
+
+    if (isProfessor) {
+      // Fetch all concepts and their average mastery across all students
+      const [classMastery] = await db.execute(`
+        SELECT 
+          c.id AS concept_id,
+          c.name AS concept_name,
+          c.description AS concept_description,
+          COALESCE(AVG(sm.mastery_score), 50.0) AS mastery_score,
+          COALESCE(SUM(sm.attempt_count), 0) AS total_attempts
+        FROM concepts c
+        LEFT JOIN student_mastery sm ON c.id = sm.concept_id
+        GROUP BY c.id, c.name, c.description
+        ORDER BY c.id ASC
+      `);
+
+      const formatted = classMastery.map(row => {
+        const score = parseFloat(row.mastery_score) || 50.0;
+        let tier = 'Good';
+        if (score < 50) tier = 'Knowledge Gap';
+        else if (score < 70) tier = 'Developing';
+
+        return {
+          concept_id: row.concept_id,
+          concept_name: row.concept_name,
+          concept_description: row.concept_description,
+          mastery_score: score,
+          tier: tier,
+          total_attempts: row.total_attempts
+        };
+      });
+
+      return res.status(200).json(formatted);
+    }
+
+    // Student view: Fetch individual student records
     const [mastery] = await db.execute(`
       SELECT m.*, c.name AS concept_name, c.description AS concept_description
       FROM student_mastery m 
       JOIN concepts c ON m.concept_id = c.id 
       WHERE m.student_id = ?
-    `, [studentId]);
+    `, [userId]);
 
-    const formattedMastery = mastery.map(m => ({
-      ...m,
-      tier: getMasteryTier(m.mastery_score)
-    }));
+    const formattedMastery = mastery.map(m => {
+      const score = parseFloat(m.mastery_score) || 0;
+      let tier = 'Good';
+      if (score < 50) tier = 'Knowledge Gap';
+      else if (score < 70) tier = 'Developing';
+
+      return {
+        ...m,
+        mastery_score: score,
+        tier: tier
+      };
+    });
 
     res.status(200).json(formattedMastery);
   } catch (error) {
